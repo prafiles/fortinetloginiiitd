@@ -197,6 +197,7 @@
             this.MaximizeBox = false;
             this.Name = "MainWindow";
             this.Text = "Auto Login @ IIITD - Fortinet";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.eventFormClosing);
             this.Load += new System.EventHandler(this.MainWindow_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

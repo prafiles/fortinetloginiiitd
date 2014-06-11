@@ -42,9 +42,9 @@
             this.lbl_CheckURL.AutoSize = true;
             this.lbl_CheckURL.Location = new System.Drawing.Point(9, 13);
             this.lbl_CheckURL.Name = "lbl_CheckURL";
-            this.lbl_CheckURL.Size = new System.Drawing.Size(60, 13);
+            this.lbl_CheckURL.Size = new System.Drawing.Size(65, 13);
             this.lbl_CheckURL.TabIndex = 0;
-            this.lbl_CheckURL.Text = "CheckURL";
+            this.lbl_CheckURL.Text = "CheckURLs";
             // 
             // lbl_FortinetURL
             // 

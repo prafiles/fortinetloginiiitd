@@ -61,7 +61,7 @@ namespace FortinetAutoLoginIIITD.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://www.bing.com/")]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://t.in.msn.com/?rd=1&ucc=IN&dcc=IN&opt=0;<title>MSN India - ")]
         public string checkURL {
             get {
                 return ((string)(this["checkURL"]));

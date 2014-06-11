@@ -20,10 +20,13 @@ namespace FortinetAutoLoginIIITD
     {
         int connectionStatus;
         int minuteCount;
+        int nextCheckURL;
+        int checkURLCount;
         bool flagLoginStatus;
-        bool flagAutoLogin;
+        //bool flagAutoLogin;
         bool flagFastNetCheck;
-        System.Uri checkURL;
+        System.Uri[] checkURLs;
+        string[] pageTitle;
         System.Uri responseURI;
         System.Uri fortinetURL;
         System.Uri keepAliveURL;
@@ -53,7 +56,16 @@ namespace FortinetAutoLoginIIITD
             chk_DontAskAgain.Checked = Properties.Settings.Default.AutoLogin;
             txt_Username.Text = Properties.Settings.Default.Username;
             txt_Password.Text = Properties.Settings.Default.Password;
-            checkURL = new Uri(Properties.Settings.Default.checkURL);
+            string[] checkURLStrings = Properties.Settings.Default.checkURL.Split(';');
+            checkURLCount = checkURLStrings.Count()/2;
+            checkURLs = new Uri[checkURLCount];
+            pageTitle = new string[checkURLCount];
+            for (int i = 0; i < checkURLCount*2; i+=2)
+            {
+                checkURLs[i/2] = new Uri(checkURLStrings[i]);
+                pageTitle[i/2] = checkURLStrings[i+1];
+            }
+            nextCheckURL = 0;
             fortinetURL = new Uri(Properties.Settings.Default.fortinetURL);
             flagFastNetCheck = Properties.Settings.Default.flagFastNetCheck;
         }
@@ -102,7 +114,7 @@ namespace FortinetAutoLoginIIITD
             txt_Password.Enabled = true;
             flagLoginStatus = false;
             flagFastNetCheck = false;
-            openURL(checkURL.OriginalString);
+            openURL(checkURLs[nextCheckURL].OriginalString);
             timer.Interval = 5000;
         }
 
@@ -165,13 +177,14 @@ namespace FortinetAutoLoginIIITD
         {
             if (flagFastNetCheck)
                 if (IsConnectedToInternet()) return 1;
-
-            string data = openURL(checkURL.OriginalString);// + "search?q=" + randomString(5));
+            if (++nextCheckURL >= checkURLCount) 
+                nextCheckURL = 0;
+            string data = openURL(checkURLs[nextCheckURL].OriginalString);// + "search?q=" + randomString(5));
             if (data == "-1")
             {
                 return -1;
             }
-            if (data.IndexOf("Bing</title>") > 0)
+            if (data.IndexOf(pageTitle[nextCheckURL]) > 0)
             {
                 return 1;
             }
@@ -187,7 +200,7 @@ namespace FortinetAutoLoginIIITD
 
         private void performLogin(string username, string password)
         {
-            string tempCheckURL = checkURL.OriginalString;// +"search?q=" + randomString(5);
+            string tempCheckURL = checkURLs[nextCheckURL].OriginalString;// +"search?q=" + randomString(5);
             string page = openURL(tempCheckURL);
             string page_4Tredir = HttpUtility.UrlEncode(tempCheckURL);
             int index = page.IndexOf("magic") + 14;
@@ -212,7 +225,7 @@ namespace FortinetAutoLoginIIITD
                 StreamReader reader = new StreamReader(response.GetResponseStream());
                 page = reader.ReadToEnd();
             }
-            catch 
+            catch
             {
                 lbl_Status.Text = "Unable to login.";
                 flagLoginStatus = false;
@@ -230,6 +243,11 @@ namespace FortinetAutoLoginIIITD
             magicLogout = page.Substring(index + keepAlive.Length, 16);
             log("Magic Logout : " + magicLogout);
             minuteCount = 0;
+            nextCheckURL++;
+            if (nextCheckURL >= checkURLCount)
+            {
+                nextCheckURL = 0;
+            }
         }
 
         private void performLogout()
@@ -394,6 +412,12 @@ namespace FortinetAutoLoginIIITD
                 buffer[i] = _chars[_rng.Next(_chars.Length)];
             }
             return new string(buffer);
+        }
+
+        private void eventFormClosing(object sender, FormClosingEventArgs e)
+        {
+            log("Form closing.");
+            logout();
         }
     }
 }
