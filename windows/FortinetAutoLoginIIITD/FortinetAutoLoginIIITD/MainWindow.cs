@@ -57,13 +57,13 @@ namespace FortinetAutoLoginIIITD
             txt_Username.Text = Properties.Settings.Default.Username;
             txt_Password.Text = Properties.Settings.Default.Password;
             string[] checkURLStrings = Properties.Settings.Default.checkURL.Split(';');
-            checkURLCount = checkURLStrings.Count()/2;
+            checkURLCount = checkURLStrings.Count() / 2;
             checkURLs = new Uri[checkURLCount];
             pageTitle = new string[checkURLCount];
-            for (int i = 0; i < checkURLCount*2; i+=2)
+            for (int i = 0; i < checkURLCount * 2; i += 2)
             {
-                checkURLs[i/2] = new Uri(checkURLStrings[i]);
-                pageTitle[i/2] = checkURLStrings[i+1];
+                checkURLs[i / 2] = new Uri(checkURLStrings[i]);
+                pageTitle[i / 2] = checkURLStrings[i + 1];
             }
             nextCheckURL = 0;
             fortinetURL = new Uri(Properties.Settings.Default.fortinetURL);
@@ -177,7 +177,7 @@ namespace FortinetAutoLoginIIITD
         {
             if (flagFastNetCheck)
                 if (IsConnectedToInternet()) return 1;
-            if (++nextCheckURL >= checkURLCount) 
+            if (++nextCheckURL >= checkURLCount)
                 nextCheckURL = 0;
             string data = openURL(checkURLs[nextCheckURL].OriginalString);// + "search?q=" + randomString(5));
             if (data == "-1")
@@ -417,7 +417,8 @@ namespace FortinetAutoLoginIIITD
         private void eventFormClosing(object sender, FormClosingEventArgs e)
         {
             log("Form closing.");
-            logout();
+            if (flagLoginStatus)
+                logout();
         }
     }
 }
